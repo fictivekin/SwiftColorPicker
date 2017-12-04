@@ -81,7 +81,7 @@ public class ColorPicker: UIView {
     func commonInit() {
         isUserInteractionEnabled = true
         clipsToBounds = false
-        self.addObserver(self, forKeyPath: "bounds", options: [NSKeyValueObservingOptions.new, NSKeyValueObservingOptions.initial], context: nil)
+        self.addObserver(self, forKeyPath: "bounds", options: [NSKeyValueObservingOptions.new], context: nil)
     }
     
     deinit {
