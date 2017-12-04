@@ -7,27 +7,27 @@
 
 import UIKit
 
-@IBDesignable open class ColorWell: UIButton {
+@IBDesignable public class ColorWell: UIButton {
 
-    @IBInspectable open var color:UIColor = UIColor.cyan {
+    @IBInspectable public var color:UIColor = UIColor.cyan {
         didSet {
             setNeedsDisplay()
         }
     }
 
 
-    open var previewColor:UIColor? {
+    public var previewColor:UIColor? {
         didSet {
             setNeedsDisplay()
         }
     }
-    @IBInspectable open var borderColor:UIColor = UIColor.darkGray {
+    @IBInspectable public var borderColor:UIColor = UIColor.darkGray {
         didSet {
             setNeedsDisplay()
         }
     }
     
-    @IBInspectable open var borderWidth:CGFloat = 2 {
+    @IBInspectable public var borderWidth:CGFloat = 2 {
         didSet{
             setNeedsDisplay()
         }
@@ -49,7 +49,7 @@ import UIKit
         commonInit()
     }
 
-    override open func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         let ovalPath = UIBezierPath(ovalIn: CGRect(x: 5.5, y: 5.5, width: 35, height: 35))
         color.setFill()
         ovalPath.fill()
@@ -58,7 +58,7 @@ import UIKit
         if let col = previewColor {
             let ovalRect = CGRect(x: 5.5, y: 5.5, width: 35, height: 35)
             let ovalPath = UIBezierPath()
-            ovalPath.addArc(withCenter: CGPoint(x: ovalRect.midX, y: ovalRect.midY), radius: ovalRect.width / 2, startAngle: -90 * .pi/180, endAngle: 90 * .pi/180, clockwise: true)
+            ovalPath.addArc(withCenter: CGPoint(x: ovalRect.midX, y: ovalRect.midY), radius: ovalRect.width / 2, startAngle: -90 * CGFloat.pi/180, endAngle: 90 * CGFloat.pi/180, clockwise: true)
             ovalPath.addLine(to: CGPoint(x: ovalRect.midX, y: ovalRect.midY))
             ovalPath.close()
             

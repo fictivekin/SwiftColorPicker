@@ -7,13 +7,14 @@
 
 import UIKit
 
-open class HuePicker: UIView {
+public class HuePicker: UIView {
     
     var _h:CGFloat = 0.1111
-    open var h:CGFloat { // [0,1]
+    public var h:CGFloat { // [0,1]
         set(value) {
             _h = min(1, max(0, value))
-            currentPoint = CGPoint(x: CGFloat(_h), y: 0)
+            currentPoint = CGPoint(x: bounds.width * CGFloat(_h), y: 0)
+            handleRect = CGRect(x: currentPoint.x-3, y: 0, width: 6, height: bounds.height)
             setNeedsDisplay()
         }
         get {
@@ -21,13 +22,14 @@ open class HuePicker: UIView {
         }
     }
     var image:UIImage?
-    fileprivate var data:[UInt8]?
-    fileprivate var currentPoint = CGPoint.zero
-    open var handleColor:UIColor = UIColor.black
+    private var data:[UInt8]?
+    private var currentPoint = CGPoint.zero
+    private var handleRect = CGRect.zero
+    public var handleColor:UIColor = UIColor.black
     
-    open var onHueChange:((_ hue:CGFloat, _ finished:Bool) -> Void)?
+    public var onHueChange:((_ hue:CGFloat, _ finished:Bool) -> Void)?
     
-    open func setHueFromColor(_ color:UIColor) {
+    public func setHueFromColor(color:UIColor) {
         var h:CGFloat = 0
         color.getHue(&h, saturation: nil, brightness: nil, alpha: nil)
         self.h = h
@@ -49,7 +51,8 @@ open class HuePicker: UIView {
         let height = UInt(bounds.height)
         
         if  data == nil {
-            data = [UInt8](repeating: UInt8(255), count: Int(width * height) * 4)
+            
+            data = Array<UInt8>(repeating: UInt8(255), count: Int(width * height) * 4)
         }
 
         var p = 0.0
@@ -114,37 +117,48 @@ open class HuePicker: UIView {
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
 
-        let provider = CGDataProvider(data: Data(bytes: d, count: d.count * MemoryLayout<UInt8>.size) as CFData)
-        let cgimg = CGImage(width: Int(width), height: Int(height), bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: Int(width) * Int(MemoryLayout<UInt8>.size * 4),
-            space: colorSpace, bitmapInfo: bitmapInfo, provider: provider!, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)
+        let provider = CGDataProvider(data: NSData(bytes: &d, length: d.count * MemoryLayout<UInt8>.size))
+        let cgimg = CGImage(
+            width: Int(width),
+            height: Int(height),
+            bitsPerComponent: 8,
+            bitsPerPixel: 32,
+            bytesPerRow: Int(width) * Int(MemoryLayout<UInt8>.size * 4),
+            space: colorSpace,
+            bitmapInfo: bitmapInfo,
+            provider: provider!,
+            decode: nil,
+            shouldInterpolate: true,
+            intent: .defaultIntent)
         
         
         image = UIImage(cgImage: cgimg!)
         
     }
     
-    fileprivate func handleTouch(_ touch:UITouch, finished:Bool) {
+    private func handleTouch(touch:UITouch, finished:Bool) {
         let point = touch.location(in: self)
-        currentPoint = CGPoint(x: max(0, min(bounds.width, point.x)) / bounds.width , y: 0)
-        _h = currentPoint.x
+        currentPoint = CGPoint(x: max(0, min(bounds.width, point.x)) , y: 0)
+        handleRect = CGRect(x: currentPoint.x-3, y: 0, width: 6, height: bounds.height)
+        _h = (1/bounds.width) * currentPoint.x
         onHueChange?(h, finished)
         setNeedsDisplay()
     }
     
-    override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first! as UITouch, finished: false)
+    override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleTouch(touch: touches.first! as UITouch, finished: false)
     }
     
-    override open func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first! as UITouch, finished: false)
+    override public func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleTouch(touch: touches.first! as UITouch, finished: false)
     }
     
-    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first! as UITouch, finished: true)
+    override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleTouch(touch: touches.first! as UITouch, finished: true)
     }
     
     
-    override open func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         if image == nil {
             renderBitmap()
         }
@@ -152,7 +166,6 @@ open class HuePicker: UIView {
             img.draw(in: rect)
         }
 
-        let handleRect = CGRect(x: bounds.width * currentPoint.x-3, y: 0, width: 6, height: bounds.height)
         drawHueDragHandler(frame: handleRect)
     }
     
@@ -182,4 +195,3 @@ open class HuePicker: UIView {
 
 
 }
-

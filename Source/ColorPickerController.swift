@@ -7,30 +7,30 @@
 
 import UIKit
 
-open class ColorPickerController: NSObject {
+public class ColorPickerController: NSObject {
     
-    open var onColorChange:((_ color:UIColor, _ finished:Bool)->Void)? = nil
+    public var onColorChange:((_ color:UIColor, _ finished:Bool)->Void)? = nil
     
     // Hue Picker
-    open var huePicker:HuePicker
+    public var huePicker:HuePicker
     
     // Color Well
-    open var colorWell:ColorWell {
+    public var colorWell:ColorWell {
         didSet {
-            huePicker.setHueFromColor(colorWell.color)
+            huePicker.setHueFromColor(color: colorWell.color)
             colorPicker.color =  colorWell.color
         }
     }
     
     
     // Color Picker
-    open var colorPicker:ColorPicker
+    public var colorPicker:ColorPicker
     
-    open var color:UIColor? {
+    public var color:UIColor? {
         set(value) {
             colorPicker.color = value!
             colorWell.color = value!
-            huePicker.setHueFromColor(value!)
+            huePicker.setHueFromColor(color: value!)
         }
         get {
             return colorPicker.color
@@ -42,10 +42,10 @@ open class ColorPickerController: NSObject {
         self.colorPicker = svPickerView
         self.colorWell = colorWell
         self.colorWell.color = colorPicker.color
-        self.huePicker.setHueFromColor(colorPicker.color)
+        self.huePicker.setHueFromColor(color: colorPicker.color)
         super.init()
         self.colorPicker.onColorChange = {(color, finished) -> Void in
-            self.huePicker.setHueFromColor(color)
+            self.huePicker.setHueFromColor(color: color)
             self.colorWell.previewColor = (finished) ? nil : color
             if(finished) {self.colorWell.color = color}
             self.onColorChange?(color, finished)
